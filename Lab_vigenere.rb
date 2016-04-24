@@ -17,6 +17,10 @@ class ManagerString
 
     attr_reader :letters
 
+    def initialize(letters = [])
+        @letters = letters
+    end
+
     def cifrate_string(data, key)
     
     end
@@ -26,20 +30,17 @@ class ManagerString
         [*2..10].each{ |index_group|
             groups = data_cifrate.split("").each_slice(index_group).to_a
             joined_groups = groups.map {|group| group.join("")}
-            p joined_groups
             joined_groups.each_with_index do |group, index|
-                obj_letter = locate({letter: group}, letters_array)
+                obj_letter = locate({letter: group}, @letters)
                 if obj_letter.nil?
-                    letters_array.push Letter.new(group, 1, index % index_group) 
+                    @letters.push Letter.new(group, 1, index % index_group) 
                 else
                     obj_letter.incidences(obj_letter.incidence)
                 end
             end
             break
         }
-        @letters = letters_array
-        @letters.sort! { |x,y| y.incidence <=> x.incidence } 
-        letters_array
+        @letters.sort! { |x,y| y.incidence <=> x.incidence }
     end
 
     def locate(data, letters_array)
