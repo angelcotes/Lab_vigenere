@@ -26,6 +26,7 @@ class ManagerString
         [*2..10].each{ |index_group|
             groups = data_cifrate.split("").each_slice(index_group).to_a
             joined_groups = groups.map {|group| group.join("")}
+            p joined_groups
             joined_groups.each_with_index do |group, index|
                 obj_letter = locate({letter: group}, letters_array)
                 if obj_letter.nil?
@@ -37,6 +38,7 @@ class ManagerString
             break
         }
         @letters = letters_array
+        @letters.sort! { |x,y| y.incidence <=> x.incidence } 
         letters_array
     end
 
