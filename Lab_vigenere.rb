@@ -1,66 +1,90 @@
-class Letter
-    attr_reader :letter, :id
-    attr_accessor :incidence
-
-    def initialize(letter, num_incidence, id_group)
-        @letter = letter
-        @incidence = num_incidence
-        @id = id_group
-    end
-
-    def incidences(num_incidence)
-        @incidence = num_incidence + 1
-    end
+def decode(encoded_text, key)
+  text_len = encoded_text.length
+  times = (text_len.to_f / key.length.to_f).ceil
+  new_key = key*(times)
+  difference = (encoded_text.length - new_key.length).abs
+  new_key = new_key[0...-difference]
+  [(encoded_text.hex ^ new_key.hex).to_s(16).rjust(encoded_text.length, '0')].pack('H*')
 end
 
-class ManagerString
+text = "FB50F7C621B40EC24CB2C63BA80EC75EFCD526AC49CE1FFDD473B946CE1FFBDF32AA47C55EE6DB3CA30ECA51F69227A54B8B4FF3C120A441C54CBC921AB90ED95AFED327A85D8B4BFD9224A54FDF5AE4D721ED49C249F7C173A443C65AF6DB32B94B8B4FFED732BE5BD95AB2DD21ED5ECA56FC9227A20EDF57F7923BB843CA51B2DF3AA34A851FDBC673AE41C65AE1923BA243CE1FE6DD73B946CE1FF0DD20A243D81FF3DC37ED4CDE4CFBDC36BE5DCE4CB2DD35ED43CE51A99235A25C8B51FDC63BA440CC1FF0C727ED59C35EE69230A243CE4CB2DA3CA04B8B4BFD9227A54BC61FFBDC73B946CE1FFFDD20B90ECC5AFCD721AC428B5EFCD673A440DF5AFEDE3AAA47C953F79220A54FDB5AB2D132A30EC95AB2D373BE5BC955F7D127ED48C44DB2C23CA85AD946BC9203A24BDF4DEB923ABE0EDF57F79226A347DD5AE0C132A10EC75EFCD526AC49CE1FE5DA3AAE468B4BFAD773A54BCA4DE6923BA242CF4CB2C53AB9468B51F3C626BF4B8B5EFCD673A45AD85AFED47DED66CE1FE5DA3CED46CA4CB2D373AE41C54BF7DF23B90ECD50E09223A24BDF4DEB9230AC40C550E6923BAC58CE1FFFC730A50ED95AE1C236AE5A8B59FDC073A547C64CF7DE35E10EC44DB2D43CBF0ECA51EBC63BA440CC1FF7DE20A8008B68FAD721A858CE4DB2C63BA85CCE1FFBC173AC0ED85AFCC136ED41CD1FF0D732B85AD213B2DD21ED5EC448F7C07FED41D91FFAD321A041C546BE9232BE0EC251B2C63BA80EC650E6DB3CA30EC459B2D373BA4FDD5AB2DD35ED5AC35AB2C136AC028B56FC9227A54B8B58E0DD24B9468B50F49232ED48C750E5D721E10EDF57F7C036ED47D81FE2DD36B95CD21FFBDC73A45AD81FF0DB21B94685"
+#text = "0E38212D26306328216C2B362728312D3B36276126236F252A32272D233A39283C2B6F2A2C34206C233A2524753F6F392C3420222A2A63232B6C223228283C2B6F3A3761212522232F2472382073202022383A21266D72233D34222F3B362A73222F366C3C3B2233376C22362E2E20252A206D611F353C322A2272253C73226122233836312727206F302B333D22203F2C263B2F2E3F63313E2D3B352C333F6C3B3B2235722F203E21283C293C733A2E273E6F372A263B382E3F63253B2D3D2A6F613E2529366333373F3A3E266133222B732E2436252E732F28303E2E213A6F720F203F2F2030233D323724722D21376322273E2E2726612B233A2163242A3C2A212A243C2F2A2063363B38277325333B292137306133222B7325203F25232A6D6111292336213333382A732F2834296820632C3D212A3D3732722521733729376C3F322F2C722329733A2E273E6F3B222F3662"
+#text = "F96DE8C227A259C87EE1DA2AED57C93FE5DA36ED4EC87EF2C63AAE5B9A7EFFD673BE4ACF7BE8923CAB1ECE7AF2DA3DA44FCF7AE29235A24C963FF0DF3CA3599A70E5DA36BF1ECE77F8DC34BE129A6CF4D126BF5B9A7CFEDF3EB850D37CF0C63AA2509A76FF9227A55B9A6FE3D720A850D97AB1DD35ED5FCE6BF0D138A84CC931B1F121B44ECE70F6C032BD56C33FF9D320ED5CDF7AFF9226BE5BDE3FF7DD21ED56CF71F5C036A94D963FF8D473A351CE3FE5DA3CB84DDB71F5C17FED51DC3FE8D732BF4D963FF3C727ED4AC87EF5DB27A451D47EFD9230BF47CA6BFEC12ABE4ADF72E29224A84CDF3FF5D720A459D47AF59232A35A9A7AE7D33FB85FCE7AF5923AA31EDB3FF7D33ABF52C33FF0D673A551D93FFCD33DA35BC831B1F43CBF1EDF67F0DF23A15B963FE5DA36ED68D378F4DC36BF5B9A7AFFD121B44ECE76FEDC73BE5DD27AFCD773BA5FC93FE5DA3CB859D26BB1C63CED5CDF3FE2D730B84CDF3FF7DD21ED5ADF7CF0D636BE1EDB79E5D721ED57CE3FE6D320ED57D469F4DC27A85A963FF3C727ED49DF3FFFDD24ED55D470E69E73AC50DE3FE5DA3ABE1EDF67F4C030A44DDF3FF5D73EA250C96BE3D327A84D963FE5DA32B91ED36BB1D132A31ED87AB1D021A255DF71B1C436BF479A7AF0C13AA14794"
+divided_letters = text.split("").each_slice(2).to_a
+divided_letters = divided_letters.map {|group| group.join("")}
 
-    attr_reader :letters
-
-    def initialize(letters = [])
-        @letters = letters
+ascii_characters = Array.new
+[*0..255].each { |ascii|
+  char_hex = "%02X" % [ascii.chr.ord]
+  ascii_characters.push char_hex
+}
+selected_groups = Array.new
+[*2..10].each {|i|
+  caesar_groups = Array.new(i) {|j| Array.new }
+  index = 0
+  divided_letters.each { |letter|
+    caesar_groups[index].push letter #separa los grupos
+    index += 1
+    index = 0 if index == i
+  }
+  is_group_selected = false
+  caesar_groups.each { |group|
+    if group.uniq.length > 94 then
+      break
     end
-
-    def cifrate_string(data, key)
-    
+    occurrences = group.each_with_object(Hash.new(0)) { |word, counts| counts[word] += 1 }
+    ic = 0
+    occurrences.each { |letter, occurrences|
+      ic += occurrences * (occurrences - 1)
+    }
+    ic = ic.to_f / (group.length.to_f * (group.length.to_f - 1.0))
+    if (0.068 - ic).abs <= 0.015
+      is_group_selected = true
+    else 
+      break
     end
-
-    def decipher_string(data_cifrate)
-        letters_array = []
-        [*2..10].each{ |index_group|
-            groups = data_cifrate.split("").each_slice(index_group).to_a
-            joined_groups = groups.map {|group| group.join("")}
-            joined_groups.each_with_index do |group, index|
-                obj_letter = locate({letter: group}, @letters)
-                if obj_letter.nil?
-                    @letters.push Letter.new(group, 1, index % index_group) 
-                else
-                    obj_letter.incidences(obj_letter.incidence)
-                end
-            end
-            break
-        }
-        @letters.sort! { |x,y| y.incidence <=> x.incidence }
-    end
-
-    def locate(data, letters_array)
-        letter = letters_array.select { |letter| letter.send(:letter) == data[:letter] }.first if !letters_array.nil?
-        letter
-    end
-
-    def conver_hex(data)
-        data_hex = ''
-        data.chars do |chr| 
-            data_hex = data_hex + "%02X" % [chr.ord]
+  }
+  selected_groups.push({:len => i, :matrix => caesar_groups}) if is_group_selected
+}
+key = Array.new
+selected_groups.each { |group|
+  matrix = group[:matrix]
+  key_len = group[:len]
+  possible_letter_groups = Array.new(key_len) {|j| Array.new }
+  matrix.each_with_index { |row, index_group|
+    unique_from_row = row.uniq
+    ascii_characters.each { |char_hex|
+      is_printable = true
+      unique_from_row.each { |letter|        
+        xor = (letter.hex ^ char_hex.hex).to_s(16).rjust(letter.length, '0')        
+        if xor.hex < "20".hex || xor.hex > "7E".hex then
+          is_printable = false
+          break
         end
-        data_hex
-    end
-end
-
-obj_manager_string = ManagerString.new
-a = 'SIWWUQUKUUWSSIWWUQARUDCQTICYEF IJBBERNTRDMBPGSBWVAHGZIUJRUUVKETRDM'
-a = obj_manager_string.conver_hex(a)
-puts a
-obj_manager_string.decipher_string(a)
-p obj_manager_string.letters
-
+      }
+      if is_printable
+        occurrences = Hash.new
+        cont_alphabet = 0
+        matrix[index_group].each { |e|
+          xor = (e.hex ^ char_hex.hex).to_s(16).rjust(e.length, '0')  
+          string = [(e.hex ^ char_hex.hex).to_s(16).rjust(e.length, '0')].pack('H*')
+          if xor.hex >= "41".hex && xor.hex <= "5A".hex || xor.hex >= "61".hex && xor.hex <= "7A".hex  || xor.hex == "20".hex then
+            cont_alphabet += 1          
+          end
+          if occurrences[string] == nil then
+            occurrences[string] = 1
+          else
+            occurrences[string] += 1
+          end
+        }
+        if cont_alphabet.to_f / matrix[index_group].length.to_f > 0.88
+          key.push char_hex
+        end
+      end
+    }
+  }
+  puts " --> Possible Key Hexa: #{key.join}"
+  puts " --> Possible Key String: #{[key.join].pack('H*')}"
+  puts "#{decode(text, key.join)}"
+  break
+}
